@@ -9,11 +9,11 @@
 <body style="margin:0; overflow:hidden;">
 
 <a-scene
-  vr-mode-ui="enabled: false"
-  renderer="logarithmicDepthBuffer: true;"
-  webxr="requiredFeatures: hit-test, local-floor;"
+  embedded
   xr-mode-ui="enabled: true"
+  webxr="mode: immersive-ar; requiredFeatures: local-floor;"
 >
+
 
   <a-entity camera position="0 1.6 0"></a-entity>
 
