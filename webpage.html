@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Wayfinding | Team 1</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <header class="header">
+        <div class="badge">Prototype</div>
+        <h1>AR Wayfinding</h1>
+        <p class="subtitle">Scan the QR code → choose your destination → generate guidance.</p>
+      </header>
+
+      <div class="content">
+        <div class="field">
+          <label for="start" class="label">Starting location</label>
+          <input id="start" class="input" type="text" placeholder="Auto-filled from QR (e.g., lobby-qr-01)" />
+          <p class="hint">Tip: Each physical QR can represent a starting point using <code>?start=...</code>.</p>
+        </div>
+
+        <div class="field">
+          <label for="destination" class="label">Destination</label>
+          <select id="destination" class="select">
+            <option value="">-- Select a destination --</option>
+            <option value="main-entrance">Main Entrance</option>
+            <option value="front-desk">Front Desk / Information</option>
+            <option value="elevator-a">Elevator A</option>
+            <option value="restroom-1">Restroom (1st Floor)</option>
+            <option value="radiology-checkin">Radiology Check-in</option>
+            <option value="lab-services">Lab Services</option>
+            <option value="cafeteria">Cafeteria</option>
+          </select>
+        </div>
+
+        <button id="generateBtn" class="button primary">Generate Wayfinding</button>
+        <p id="error" class="error hidden">Please select a destination.</p>
+
+        <div class="info">
+          <h2>What happens next?</h2>
+          <ol>
+            <li>We open the AR guidance page.</li>
+            <li>Your destination is passed securely in the URL.</li>
+            <li>The AR page will load guidance content (placeholder for now).</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <small>Team 1 • AR Wayfinding Prototype</small>
+    </footer>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
