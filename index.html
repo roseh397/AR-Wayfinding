@@ -57,11 +57,11 @@
           if (camera) {
             const yawDeg = camera.object3D.rotation.y * (180 / Math.PI); // Camera yaw in degrees
 
-            // Map camera yaw directly to the arrow's local yaw (so positive yaw => arrow rotates right).
-            // Clamp to [-90, 90] to avoid extreme flips.
-            const arrowLocalYaw = Math.max(-90, Math.min(90, yawDeg));
+          // Invert sign: positive yaw → arrow rotates left (negative local yaw),
+          // negative yaw → arrow rotates right.
+          const arrowLocalYaw = Math.max(-90, Math.min(90, -yawDeg));
 
-            arrowEntity.setAttribute("rotation", `0 ${arrowLocalYaw} 180`);
+            arrowEntity.setAttribute("rotation", `0 ${arrowLocalYaw} 0`);
           }
           requestAnimationFrame(updateArrowRotation);
         };
