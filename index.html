@@ -67,16 +67,16 @@
           }
           // Camera pans right (positive yaw) → arrow points left (270°)
           else if (yawDeg > 0) {
-            arrowYawDeg = 270;
+            arrowYawDeg = (yawDeg/270)*270;
 			arrowPitchDeg = 0;
           }
           // Camera pans left (negative yaw) → arrow points right (90°)
           else {
-            arrowYawDeg = 90;
+            arrowYawDeg = Math.abs(yawDeg)/270*90;
 			arrowPitchDeg = 0;
           }
           
-          arrowEntity.setAttribute("rotation", `40 ${arrowYawDeg} 0`);
+          arrowEntity.setAttribute("rotation", `${arrowPitchDeg} ${arrowYawDeg} 0`);
         }
         requestAnimationFrame(updateArrowRotation);
       };
