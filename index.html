@@ -52,36 +52,21 @@
       camera = document.querySelector("a-camera");
       
       // Continuously monitor camera rotation and update arrow orientation
-      const updateArrowRotation = () => {
-        if (camera) {
-          const rotation = camera.object3D.rotation;
-          const yaw = rotation.y; // Camera yaw in radians
-          const yawDeg = yaw * (180 / Math.PI); // Convert to degrees
+        // Use the camera yaw directly to drive the arrow's local yaw for smooth, continuous movement.
+        const updateArrowRotation = () => {
+          if (camera) {
+            const yawDeg = camera.object3D.rotation.y * (180 / Math.PI); // Camera yaw in degrees
 
-          let arrowYawDeg = 0;
-          
-          // If camera yaw is roughly centered (between -20 and 20 degrees), arrow points forward (0°)
-          if (Math.abs(yawDeg) < 20) {
-            arrowYawDeg = 0;
-			arrowPitchDeg = 40;
-          }
-          // Camera pans right (positive yaw) → arrow points left (270°)
-          else if (yawDeg > 0) {
-            arrowYawDeg = (yawDeg/270)*90;
-			arrowPitchDeg = 0;
-          }
-          // Camera pans left (negative yaw) → arrow points right (90°)
-          else {
-            arrowYawDeg = yawDeg/270*270;
-			arrowPitchDeg = 0;
-          }
-          
-          arrowEntity.setAttribute("rotation", `${arrowPitchDeg} ${arrowYawDeg} 0`);
-        }
-        requestAnimationFrame(updateArrowRotation);
-      };
+            // Map camera yaw directly to the arrow's local yaw (so positive yaw => arrow rotates right).
+            // Clamp to [-90, 90] to avoid extreme flips.
+            const arrowLocalYaw = Math.max(-90, Math.min(90, yawDeg));
 
-      updateArrowRotation();
+            arrowEntity.setAttribute("rotation", `0 ${arrowLocalYaw} 0`);
+          }
+          requestAnimationFrame(updateArrowRotation);
+        };
+
+        updateArrowRotation();
     });
   </script>
 </body>
