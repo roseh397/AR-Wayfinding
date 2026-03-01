@@ -15,7 +15,7 @@
     arjs="sourceType: webcam; debugUIEnabled: false;"
   >
     <!-- Blue Arrow -->
-    <a-entity position="0 -0.5 -2">
+    <a-entity id="arrowEntity" position="0 -0.5 -2">
 
       <!-- Arrow Shaft -->
       <a-box 
@@ -40,5 +40,42 @@
 
     <a-camera></a-camera>
   </a-scene>
+
+  <script>
+    // Get the arrow entity
+    const arrowEntity = document.getElementById("arrowEntity");
+    let arrowRotation = 0; // 0 = pointing right, 180 = pointing left
+
+    // Camera pan detection
+    let touchStartX = 0;
+
+    // Detect touch pan and update arrow direction
+    document.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, false);
+
+    document.addEventListener("touchmove", (e) => {
+      if (touchStartX !== null) {
+        const touchCurrentX = e.touches[0].clientX;
+        const panDelta = touchCurrentX - touchStartX;
+        
+        // Pan to the right: arrow points left (180 degrees)
+        if (panDelta > 10) {
+          arrowRotation = 180;
+        }
+        // Pan to the left: arrow points right (0 degrees)
+        else if (panDelta < -10) {
+          arrowRotation = 0;
+        }
+        
+        // Apply rotation to the A-Frame entity
+        arrowEntity.setAttribute("rotation", `0 ${arrowRotation} 0`);
+      }
+    }, false);
+
+    document.addEventListener("touchend", () => {
+      touchStartX = 0;
+    }, false);
+  </script>
 </body>
 </html>

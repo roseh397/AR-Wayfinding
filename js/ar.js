@@ -5,22 +5,31 @@ const params = new URLSearchParams(window.location.search);
 const dest = params.get("dest");
 const start = params.get("start");
 
-const destLabel = document.getElementById("destLabel");
-const startLabel = document.getElementById("startLabel");
-const backBtn = document.getElementById("backBtn");
-const openLandingBtn = document.getElementById("openLandingBtn");
+// Get the arrow entity (A-Frame component)
+const arrowEntity = document.getElementById("arrowEntity");
+let arrowRotation = 0; // 0 = pointing right, 180 = pointing left
 
-destLabel.textContent = dest ? dest : "not provided";
-startLabel.textContent = start ? start : "not provided";
+// Camera pan detection
+let touchStartX = 0;
 
-// Back: keep params (handy during demo) and go to previous page
-backBtn.addEventListener("click", () => {
-  window.history.length > 1 ? window.history.back() : (window.location.href = "index.html");
-});
+// Detect touch pan and update arrow direction
+document.addEventListener("touchstart", (e) => {
+  touchStartX = e.touches[0].clientX;
+}, false);
 
-// Change destination: return to landing and preserve start parameter
-openLandingBtn.addEventListener("click", () => {
-  const url = new URL("index.html", window.location.href);
-  if (start) url.searchParams.set("start", start);
-  window.location.href = url.toString();
-});
+document.addEventListener("touchmove", (e) => {
+  if (touchStartX !== null) {
+    const touchCurrentX = e.touches[0].clientX;
+    const panDelta = touchCurrentX - touchStartX;
+    
+    // Pan to the right: arrow points left (180 degrees)
+    if (panDelta > 10) {
+      arrowRotation = 180;
+    }
+    // Pan to the left: arrow points right (0 degrees)
+    else if (panDelta < -10) {
+      arrowRotation = 0;
+    }
+    
+    // Apply rotation to the A-Frame entity
+    arrowEntity.setAttribute("rotation", `0 ${arrowRotation} 0`);
