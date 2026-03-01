@@ -16,7 +16,7 @@
   >
     <!-- Blue Arrow (child of camera, always visible) -->
     <a-camera>
-      <a-entity id="arrowEntity" position="0 -0.2 -2">
+      <a-entity id="arrowEntity" position="0 -0.2 -2" scale="0.5 0.5 0.5">
 
         <!-- Arrow Shaft -->
         <a-box 
@@ -56,11 +56,23 @@
         if (camera) {
           const rotation = camera.object3D.rotation;
           const yaw = rotation.y; // Camera yaw in radians
+          const yawDeg = yaw * (180 / Math.PI); // Convert to degrees
 
-          // Determine arrow yaw based on camera yaw sign.
+          let arrowYawDeg = 0;
+          
+          // If camera yaw is roughly centered (between -50 and 50 degrees), arrow points forward (0°)
+          if (Math.abs(yawDeg) < 50) {
+            arrowYawDeg = 0;
+          }
           // Camera pans right (positive yaw) → arrow points left (270°)
-          // Camera pans left (negative yaw) → arrow points right (0°)
-          const arrowYawDeg = yaw > 0 ? 270 : 90;
+          else if (yawDeg > 0) {
+            arrowYawDeg = 270;
+          }
+          // Camera pans left (negative yaw) → arrow points right (90°)
+          else {
+            arrowYawDeg = 90;
+          }
+          
           arrowEntity.setAttribute("rotation", `0 ${arrowYawDeg} 0`);
         }
         requestAnimationFrame(updateArrowRotation);
