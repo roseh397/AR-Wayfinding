@@ -67,12 +67,12 @@
           }
           // Camera pans right (positive yaw) → arrow points left (270°)
           else if (yawDeg > 0) {
-            arrowYawDeg = (yawDeg/270)*270;
+            arrowYawDeg = (yawDeg/270)*90;
 			arrowPitchDeg = 0;
           }
           // Camera pans left (negative yaw) → arrow points right (90°)
           else {
-            arrowYawDeg = yawDeg/270*90;
+            arrowYawDeg = yawDeg/270*270;
 			arrowPitchDeg = 0;
           }
           
