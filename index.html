@@ -58,9 +58,9 @@
           const yaw = rotation.y; // Camera yaw in radians
 
           // Determine arrow yaw based on camera yaw sign.
-          // Camera pans right (positive yaw) → arrow points left (180°)
+          // Camera pans right (positive yaw) → arrow points left (270°)
           // Camera pans left (negative yaw) → arrow points right (0°)
-          const arrowYawDeg = yaw > 0 ? 90 : 270;
+          const arrowYawDeg = yaw > 0 ? 270 : 90;
           arrowEntity.setAttribute("rotation", `0 ${arrowYawDeg} 0`);
         }
         requestAnimationFrame(updateArrowRotation);
