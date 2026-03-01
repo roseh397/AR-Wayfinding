@@ -60,20 +60,23 @@
 
           let arrowYawDeg = 0;
           
-          // If camera yaw is roughly centered (between -50 and 50 degrees), arrow points forward (0°)
-          if (Math.abs(yawDeg) < 50) {
+          // If camera yaw is roughly centered (between -20 and 20 degrees), arrow points forward (0°)
+          if (Math.abs(yawDeg) < 20) {
             arrowYawDeg = 0;
+			arrowPitchDeg = -10;
           }
           // Camera pans right (positive yaw) → arrow points left (270°)
           else if (yawDeg > 0) {
             arrowYawDeg = 270;
+			arrowPitchDeg = 0;
           }
           // Camera pans left (negative yaw) → arrow points right (90°)
           else {
             arrowYawDeg = 90;
+			arrowPitchDeg = 0;
           }
           
-          arrowEntity.setAttribute("rotation", `0 ${arrowYawDeg} 0`);
+          arrowEntity.setAttribute("rotation", `${arrowPitchDeg} ${arrowYawDeg} 0`);
         }
         requestAnimationFrame(updateArrowRotation);
       };
