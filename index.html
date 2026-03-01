@@ -15,7 +15,7 @@
     arjs="sourceType: webcam; debugUIEnabled: false;"
   >
     <!-- Blue Arrow -->
-    <a-entity id="arrowEntity" position="0 -0.5 -2">
+    <a-entity id="arrowEntity" position="0 -0.2 -2">
 
       <!-- Arrow Shaft -->
       <a-box 
@@ -51,23 +51,22 @@
     scene.addEventListener("loaded", () => {
       camera = document.querySelector("a-camera");
       
-      // Continuously monitor camera rotation and update arrow position
-      const updateArrowPosition = () => {
+      // Continuously monitor camera rotation and update arrow orientation
+      const updateArrowRotation = () => {
         if (camera) {
           const rotation = camera.object3D.rotation;
           const yaw = rotation.y; // Camera yaw in radians
-          
-          // Convert yaw to determine arrow position
-          // Positive yaw (camera pans right) → arrow moves left (negative x)
-          // Negative yaw (camera pans left) → arrow moves right (positive x)
-          const arrowX = Math.sin(yaw) * -1.5; // Inverse direction, farther away
-          
-          arrowEntity.setAttribute("position", `${arrowX} -0.5 -2`);
+
+          // Determine arrow yaw based on camera yaw sign.
+          // Camera pans right (positive yaw) → arrow points left (180°)
+          // Camera pans left (negative yaw) → arrow points right (0°)
+          const arrowYawDeg = yaw > 0 ? 180 : 0;
+          arrowEntity.setAttribute("rotation", `0 ${arrowYawDeg} 0`);
         }
-        requestAnimationFrame(updateArrowPosition);
+        requestAnimationFrame(updateArrowRotation);
       };
-      
-      updateArrowPosition();
+
+      updateArrowRotation();
     });
   </script>
 </body>

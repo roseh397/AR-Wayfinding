@@ -33,3 +33,4 @@ document.addEventListener("touchmove", (e) => {
     
     // Apply rotation to the A-Frame entity
     arrowEntity.setAttribute("rotation", `0 ${arrowRotation} 0`);
+  }}, false);
