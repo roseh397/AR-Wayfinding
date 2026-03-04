@@ -1,4 +1,4 @@
-// ar.js — step-based AR navigation with reliable turn detection
+// ar.js — step-based AR navigation using virtual heading
 
 const arrowEntity = document.getElementById("arrowEntity");
 
@@ -14,16 +14,15 @@ const path = [
 ];
 
 let currentStep = 0;
-let state = "walking"; // walking or turning
+let state = "walking"; // "walking" or "turning"
 let lastAccel = null;
-let heading = 0;
-let turnStartHeading = 0;
+let virtualHeading = 0; // virtual orientation (degrees)
 
 // -----------------------------
 // Step detection
 // -----------------------------
 window.addEventListener('devicemotion', (event) => {
-  if (state !== "walking") return; // only count steps when walking
+  if (state !== "walking") return;
 
   const acc = event.accelerationIncludingGravity;
   if (!lastAccel) { lastAccel = acc; return; }
@@ -37,15 +36,6 @@ window.addEventListener('devicemotion', (event) => {
   if (delta > 1.2) advanceStep(); // tweak sensitivity
 
   lastAccel = acc;
-});
-
-// -----------------------------
-// Compass heading
-// -----------------------------
-window.addEventListener('deviceorientation', (event) => {
-  heading = event.alpha || 0;
-  if (state === "turning") checkTurnAlignment();
-  updateArrowRotation();
 });
 
 // -----------------------------
@@ -72,8 +62,9 @@ function startNextStep() {
   if (step.action === "move") {
     state = "walking";
   } else if (step.action === "turn") {
-    state = "turning";
-    turnStartHeading = heading; // store heading at start of turn
+    state = "walking"; // immediately start walking after turn
+    virtualHeading = normalizeAngle(virtualHeading + step.degrees);
+    currentStep++; // move to next step (must be move)
   }
   updateArrowRotation();
 }
@@ -82,32 +73,11 @@ function startNextStep() {
 // Update arrow rotation
 // -----------------------------
 function updateArrowRotation() {
-  const step = path[currentStep];
-  if (!step) return;
-
-  if (state === "walking") {
-    arrowEntity.setAttribute("rotation", "0 0 0"); // arrow points straight
-  } else if (state === "turning") {
-    arrowEntity.setAttribute("rotation", `0 ${step.degrees} 0`); // arrow points left/right
-  }
+  // arrow always points along virtual heading
+  arrowEntity.setAttribute("rotation", `0 ${virtualHeading} 0`);
 }
 
 // -----------------------------
-// Check if user has physically turned
-// -----------------------------
-function checkTurnAlignment() {
-  const step = path[currentStep];
-  if (!step || step.action !== "turn") return;
-
-  const relativeTurn = normalizeAngle(heading - turnStartHeading);
-  if (Math.abs(relativeTurn - step.degrees) < 20) { // user aligned within ±20°
-    // Turn completed
-    state = "walking";
-    currentStep++;
-    startNextStep();
-  }
-}
-
 // Normalize angle to [-180, 180]
 function normalizeAngle(angle) {
   return ((angle + 180) % 360) - 180;
