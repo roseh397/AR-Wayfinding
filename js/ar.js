@@ -5,20 +5,21 @@ const params = new URLSearchParams(window.location.search);
 const dest = params.get("dest");
 const start = params.get("start");
 
+// Arrow entity (A-Frame)
 const arrowEntity = document.getElementById("arrowEntity");
 
+// Hardcoded path: distance in steps, turn in degrees
 const path = [
-  { action: "move", distance: 4 },
-  { action: "turn", degrees: 90 },
+  { action: "move", distance: 10 },   // walk 4 steps forward
+  { action: "turn", degrees: 90 },   // turn right 90°
   { action: "move", distance: 8 },
-  { action: "turn", degrees: -90 },
+  { action: "turn", degrees: -90 },  // turn left 90°
   { action: "move", distance: 6 }
 ];
 
 let currentStep = 0;
 let lastAccel = null;
-let heading = 0;
-let waitingForTurn = false;
+let heading = 0; // compass heading (0-360°)
 
 // Step detection
 window.addEventListener('devicemotion', (event) => {
@@ -31,22 +32,21 @@ window.addEventListener('devicemotion', (event) => {
     Math.pow(acc.z - lastAccel.z, 2)
   );
 
-  if (delta > 1.2) advanceStep();
+  if (delta > 1.2) { // tweak threshold for sensitivity
+    advanceStep();
+  }
 
   lastAccel = acc;
 });
 
-// Compass
+// Compass heading
 window.addEventListener('deviceorientation', (event) => {
-  heading = event.alpha || 0;
-  if (waitingForTurn) checkTurnAlignment();
+  heading = event.alpha || 0; // 0-360°
   updateArrowRotation();
 });
 
-// Advance steps
+// Advance along the path
 function advanceStep() {
-  if (waitingForTurn) return; // don’t count steps while waiting for turn
-
   const step = path[currentStep];
   if (!step) return;
 
@@ -59,39 +59,42 @@ function advanceStep() {
   }
 }
 
-// Update arrow
+// Update arrow based on path
 function updateArrowRotation() {
   const step = path[currentStep];
   if (!step) return;
 
   if (step.action === "move") {
+    // walking forward → arrow points straight
     arrowEntity.setAttribute("rotation", `0 0 0`);
-  } else if (step.action === "turn" && !waitingForTurn) {
+  } else if (step.action === "turn") {
+    // show turn arrow (left/right)
     arrowEntity.setAttribute("rotation", `0 ${step.degrees} 0`);
-    waitingForTurn = true;
+    waitForTurn(step.degrees);
   }
 }
 
-// Turn alignment check
-function checkTurnAlignment() {
-  const step = path[currentStep];
-  if (!step || step.action !== "turn") return;
+// Wait for user to physically turn
+function waitForTurn(turnDegrees) {
+  const targetHeading = (heading + turnDegrees + 360) % 360;
 
-  const targetHeading = (heading + step.degrees + 360) % 360;
-  const diff = Math.abs(normalizeAngle(targetHeading - heading));
-
-  if (diff < 15) {
-    // Turn completed
-    waitingForTurn = false;
-    currentStep++;
-    updateArrowRotation();
-  }
+  const turnCheck = () => {
+    const diff = Math.abs(normalizeAngle(targetHeading - heading));
+    if (diff < 15) { // user aligned within ±15°
+      currentStep++;
+      updateArrowRotation(); // arrow straightens
+    } else {
+      requestAnimationFrame(turnCheck);
+    }
+  };
+  turnCheck();
 }
 
+// Normalize angle to [-180, 180]
 function normalizeAngle(angle) {
   angle = ((angle + 180) % 360) - 180;
   return angle;
 }
 
-// Initialize
+// Initialize first step
 updateArrowRotation();
