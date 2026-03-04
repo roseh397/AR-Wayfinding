@@ -14,7 +14,7 @@ const path = [
   { action: "turn", degrees: 90 },   // turn right 90°
   { action: "move", distance: 8 },
   { action: "turn", degrees: -90 },  // turn left 90°
-  { action: "move", distance: 6 }
+  { action: "move", distance: 6 },
   { action: "turn", degrees: 90 }, // turn around
   { action: "move", distance: 6 }
 ];
