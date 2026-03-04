@@ -21,7 +21,7 @@ let currentStep = 0;
 let lastAccel = null;
 let heading = 0; // compass heading (0-360°)
 
-// Step detection (simple)
+// Step detection
 window.addEventListener('devicemotion', (event) => {
   const acc = event.accelerationIncludingGravity;
   if (!lastAccel) { lastAccel = acc; return; }
