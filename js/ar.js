@@ -7,7 +7,7 @@ const path = [
   { action: "move", distance: 10 },
   { action: "turn", degrees: 90 },
   { action: "move", distance: 8 },
-  { action: "turn", degrees: 90 },
+  { action: "turn", degrees: -90 },
   { action: "move", distance: 6 }
 ];
 
