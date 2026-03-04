@@ -170,11 +170,6 @@ a-scene {
   z-index: 0;
 }
 
-.container {
-  position: relative;
-  z-index: 10;
-}
-
 /* Optional: make card slightly transparent for AR overlay look */
 .card {
   background: rgba(255, 255, 255, 0.92);
