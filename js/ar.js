@@ -83,6 +83,7 @@ function waitForTurn(turnDegrees) {
     if (diff < 15) { // user aligned within ±15°
       currentStep++;
       updateArrowRotation(); // arrow straightens
+      advanceStep();
     } else {
       requestAnimationFrame(turnCheck);
     }
