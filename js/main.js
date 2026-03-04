@@ -27,7 +27,6 @@ generateBtn.addEventListener("click", () => {
 
   // Carry start location forward if present
   const start = startInput.value ? startInput.value.trim() : "";
-երս
 
   const url = new URL("ar.html", window.location.href);
   url.searchParams.set("dest", dest);

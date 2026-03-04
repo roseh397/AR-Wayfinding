@@ -9,28 +9,36 @@ const start = params.get("start");
 const arrowEntity = document.getElementById("arrowEntity");
 let arrowRotation = 0; // 0 = pointing right, 180 = pointing left
 
-// Camera pan detection
-let touchStartX = 0;
+// Hardcoded path.
+const path = [
+  { action: "move", distance: 4 },
+  { action: "turn", degrees: 90 },
+  { action: "move", distance: 8 },
+  { action: "turn", degrees: -90 },
+  { action: "move", distance: 6 }
+];
+let currentStep = 0;
 
-// Detect touch pan and update arrow direction
-document.addEventListener("touchstart", (e) => {
-  touchStartX = e.touches[0].clientX;
-}, false);
+function updateArrow() {
+  const step = path[currentStep];
+  if (!step) return;
 
-document.addEventListener("touchmove", (e) => {
-  if (touchStartX !== null) {
-    const touchCurrentX = e.touches[0].clientX;
-    const panDelta = touchCurrentX - touchStartX;
-    
-    // Pan to the right: arrow points left (180 degrees)
-    if (panDelta > 10) {
-      arrowRotation = 180;
-    }
-    // Pan to the left: arrow points right (0 degrees)
-    else if (panDelta < -10) {
-      arrowRotation = 0;
-    }
-    
-    // Apply rotation to the A-Frame entity
-    arrowEntity.setAttribute("rotation", `0 ${arrowRotation} 0`);
-  }}, false);
+  if (step.action === "move") {
+    // Arrow points forward
+    arrowEntity.setAttribute("rotation", "0 0 0");
+  }
+
+  if (step.action === "turn") {
+    // Rotate arrow right or left
+    arrowEntity.setAttribute("rotation", `0 ${step.degrees} 0`);
+  }
+}
+
+// Adding "Next Step" button
+document.getElementById("nextStepBtn").addEventListener("click", () => {
+  currentStep++;
+  updateArrow();
+});
+
+// Initialize first step
+updateArrow();
