@@ -153,3 +153,25 @@ body {
 }
 
 .footer { margin-top: 10px; color: var(--muted); }
+
+/* --- AR layering fix --- */
+
+/* Make AR scene full-screen and behind UI */
+a-scene {
+  position: fixed !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0;
+}
+
+/* Put UI above AR */
+.container {
+  position: relative;
+  z-index: 10;
+}
+
+/* Optional: make card slightly transparent for AR overlay look */
+.card {
+  background: rgba(255, 255, 255, 0.92);
+}
