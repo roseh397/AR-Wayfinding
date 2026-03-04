@@ -18,10 +18,15 @@ body {
 }
 
 .container {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 560px;
+  padding: 16px;
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .card {
@@ -166,10 +171,10 @@ a-scene {
 }
 
 /* Put UI above AR */
-.container {
+/* .container {
   position: relative;
   z-index: 10;
-}
+} */
 
 /* Optional: make card slightly transparent for AR overlay look */
 .card {
