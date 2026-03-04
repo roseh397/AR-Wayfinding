@@ -170,11 +170,11 @@ a-scene {
   z-index: 0;
 }
 
-/* Put UI above AR */
-/* .container {
+Put UI above AR */
+container {
   position: relative;
   z-index: 10;
-} */
+}
 
 /* Optional: make card slightly transparent for AR overlay look */
 .card {
