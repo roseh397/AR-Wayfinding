@@ -1,27 +1,30 @@
-// ar.js — step-based AR navigation (working)
+// ar.js — step-based AR navigation
 
+// Read query params (optional)
+const params = new URLSearchParams(window.location.search);
+const dest = params.get("dest");
+const start = params.get("start");
+
+// Arrow entity (A-Frame)
 const arrowEntity = document.getElementById("arrowEntity");
 
-// Path: distance = steps to move, degrees = relative turn
+// Hardcoded path: distance in steps, turn in degrees
 const path = [
-  { action: "move", distance: 10 },
-  { action: "turn", degrees: 90 },
+  { action: "move", distance: 10 },   // walk 4 steps forward
+  { action: "turn", degrees: 90 },   // turn right 90°
   { action: "move", distance: 8 },
-  { action: "turn", degrees: -90 },
+  { action: "turn", degrees: -90 },  // turn left 90°
+  { action: "move", distance: 6 }
+  { action: "turn", degrees: 90 }, // turn around
   { action: "move", distance: 6 }
 ];
 
 let currentStep = 0;
-let state = "walking"; // walking, turning
 let lastAccel = null;
-let heading = 0;
+let heading = 0; // compass heading (0-360°)
 
-// -----------------------------
 // Step detection
-// -----------------------------
 window.addEventListener('devicemotion', (event) => {
-  if (state !== "walking") return; // don't count steps while turning
-
   const acc = event.accelerationIncludingGravity;
   if (!lastAccel) { lastAccel = acc; return; }
 
@@ -31,86 +34,70 @@ window.addEventListener('devicemotion', (event) => {
     Math.pow(acc.z - lastAccel.z, 2)
   );
 
-  if (delta > 1.2) advanceStep(); // tweak threshold
+  if (delta > 1.2) { // tweak threshold for sensitivity
+    advanceStep();
+  }
 
   lastAccel = acc;
 });
 
-// -----------------------------
 // Compass heading
-// -----------------------------
 window.addEventListener('deviceorientation', (event) => {
-  heading = event.alpha || 0;
-  if (state === "turning") checkTurnAlignment();
+  heading = event.alpha || 0; // 0-360°
   updateArrowRotation();
 });
 
-// -----------------------------
-// Advance walking step
-// -----------------------------
+// Advance along the path
 function advanceStep() {
-  const step = path[currentStep];
-  if (!step || step.action !== "move") return;
-
-  step.distance--;
-  if (step.distance <= 0) {
-    currentStep++;
-    startNextStep();
-  }
-}
-
-// -----------------------------
-// Start next step (move or turn)
-// -----------------------------
-function startNextStep() {
   const step = path[currentStep];
   if (!step) return;
 
   if (step.action === "move") {
-    state = "walking";
-  } else if (step.action === "turn") {
-    state = "turning";
+    step.distance--;
+    if (step.distance <= 0) {
+      currentStep++;
+      updateArrowRotation();
+    }
   }
-  updateArrowRotation();
 }
 
-// -----------------------------
-// Update arrow rotation
-// -----------------------------
+// Update arrow based on path
 function updateArrowRotation() {
   const step = path[currentStep];
   if (!step) return;
 
-  if (state === "walking") {
-    arrowEntity.setAttribute("rotation", "0 0 0"); // straight
-  } else if (state === "turning") {
-    arrowEntity.setAttribute("rotation", `0 ${step.degrees} 0`); // show turn
+  if (step.action === "move") {
+    // walking forward → arrow points straight
+    arrowEntity.setAttribute("rotation", `0 0 0`);
+  } else if (step.action === "turn") {
+    // show turn arrow (left/right)
+    arrowEntity.setAttribute("rotation", `0 ${step.degrees} 0`);
+    waitForTurn(step.degrees);
   }
 }
 
-// -----------------------------
-// Check if user has physically turned
-// -----------------------------
-function checkTurnAlignment() {
-  const step = path[currentStep];
-  if (!step || step.action !== "turn") return;
+// Wait for user to physically turn
+function waitForTurn(turnDegrees) {
+  const targetHeading = (heading + turnDegrees + 360) % 360;
 
-  const targetHeading = (heading + step.degrees + 360) % 360;
-  const diff = Math.abs(normalizeAngle(targetHeading - heading));
-
-  if (diff < 20) { // user aligned within ±20°
-    state = "walking";
-    currentStep++;
-    updateArrowRotation();
-  }
+  const turnCheck = () => {
+    const diff = Math.abs(normalizeAngle(targetHeading - heading));
+    if (diff < 15) { // user aligned within ±15°
+      currentStep++;
+      updateArrowRotation(); // arrow straightens
+      advanceStep();
+    } else {
+      requestAnimationFrame(turnCheck);
+    }
+  };
+  turnCheck();
 }
 
 // Normalize angle to [-180, 180]
 function normalizeAngle(angle) {
-  return ((angle + 180) % 360) - 180;
+  angle = ((angle + 180) % 360) - 180;
+  return angle;
 }
 
-// -----------------------------
 // Initialize first step
-// -----------------------------
-startNextStep();
+updateArrowRotation();
