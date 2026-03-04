@@ -10,7 +10,7 @@ const arrowEntity = document.getElementById("arrowEntity");
 
 // Hardcoded path: distance in steps, turn in degrees
 const path = [
-  { action: "move", distance: 4 },   // walk 4 steps forward
+  { action: "move", distance: 10 },   // walk 4 steps forward
   { action: "turn", degrees: 90 },   // turn right 90°
   { action: "move", distance: 8 },
   { action: "turn", degrees: -90 },  // turn left 90°
