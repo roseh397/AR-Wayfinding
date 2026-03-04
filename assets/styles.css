@@ -170,8 +170,7 @@ a-scene {
   z-index: 0;
 }
 
-Put UI above AR */
-container {
+.container {
   position: relative;
   z-index: 10;
 }
